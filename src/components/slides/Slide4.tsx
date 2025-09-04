@@ -49,8 +49,13 @@ export default function Slide4() {
   leftRefs.current = []
   rightRefs.current = []
 
-  const setLeftRef = (el: HTMLDivElement | null) => el && leftRefs.current.push(el)
-  const setRightRef = (el: HTMLDivElement | null) => el && rightRefs.current.push(el)
+  // FIX 1: Ensure the ref callback function returns void.
+  const setLeftRef = (el: HTMLDivElement | null) => {
+    if (el) leftRefs.current.push(el)
+  }
+  const setRightRef = (el: HTMLDivElement | null) => {
+    if (el) rightRefs.current.push(el)
+  }
 
   const [connectors, setConnectors] = useState<Conn[]>([])
 
@@ -133,14 +138,16 @@ export default function Slide4() {
     show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.25 } },
   }), [])
 
+  // FIX 2: Add 'as const' to the 'ease' property to satisfy Framer Motion's Easing type.
   const leftItemVariants = useMemo(() => ({
     hidden: { opacity: 0, x: -40, rotate: -1 },
-    show: { opacity: 1, x: 0, rotate: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+    show: { opacity: 1, x: 0, rotate: 0, transition: { duration: 0.55, ease: 'easeOut' as const } },
   }), [])
 
+  // FIX 3: Add 'as const' to the 'ease' property.
   const rightItemVariants = useMemo(() => ({
     hidden: { opacity: 0, x: 40, rotate: 1 },
-    show: { opacity: 1, x: 0, rotate: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+    show: { opacity: 1, x: 0, rotate: 0, transition: { duration: 0.55, ease: 'easeOut' as const } },
   }), [])
 
   const floatAnim = {
@@ -150,7 +157,7 @@ export default function Slide4() {
 
   return (
     <div ref={rootRef} style={{ width: '100%', height: '100%', position: 'relative', padding: 24, boxSizing: 'border-box', background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)', borderRadius: 12, overflow: 'hidden' }}>
-      
+     
       {/* --- Centered Slide Title --- */}
       <motion.h1
         initial={{ opacity: 0, scale: 0.95 }}
@@ -170,7 +177,7 @@ export default function Slide4() {
           zIndex: 20,
         }}
       >
-        Human vs GPT
+        2 Neural Networks
       </motion.h1>
 
       {/* SVG CONNECTORS */}
@@ -212,7 +219,7 @@ export default function Slide4() {
 
       {/* Grid: [ Left | Circle | Right ] */}
       <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', justifyItems: 'center', padding: '120px 24px 24px', gap: 24, pointerEvents: 'none', zIndex: 3 }}>
-        
+       
         {/* LEFT STACK */}
         <motion.div variants={listContainerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'flex-start', justifyContent: 'center', pointerEvents: 'auto' }}>
           {leftMetrics.map((m, idx) => (
